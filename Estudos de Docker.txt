@@ -4,6 +4,8 @@
 
 O Docker é uma plataforma que permite criar, empacotar e executar aplicações em contêineres.
 
+Ele é responsável por armazenar vários serviços de forma isolada do SO host, como: web server, banco de dados, aplicação, memcached etc.
+
 Um contêiner é como uma caixinha leve e isolada que carrega tudo que uma aplicação precisa para rodar (código, bibliotecas, dependências, etc.).
 
 Ele garante que a aplicação funcione da mesma forma em qualquer lugar: no seu computador, no servidor da empresa ou na nuvem.
@@ -13,6 +15,57 @@ Vantagens principais:
     Portabilidade: roda em qualquer sistema que tenha Docker.
     Leveza: contêineres são mais rápidos e consomem menos recursos que máquinas virtuais.
     Isolamento: cada contêiner funciona de forma independente.
+
+O Docker desenvolveu seu próprio motor de execução, chamado libcontainer (hoje conhecido como runc).
+
+O runc é o runtime de containers padrão usado pelo Docker (e outras ferramentas compatíveis com o padrão OCI — Open Container Initiative).
+
+Ele é responsável por criar e executar containers no nível do sistema operacional, diretamente usando os recursos do kernel Linux (namespaces, cgroups, etc).
+
+ Como o runc funciona (passo a passo):
+
+    1- Recebe a especificação do container: O runc espera um pacote de container com:
+
+        Um sistema de arquivos root (rootfs) preparado
+
+        Um arquivo config.json que define como o container deve ser executado
+
+        Esse config.json segue o formato da OCI Runtime Specification.
+
+    2- Aplica namespaces do Linux: Os namespaces isolam o container do resto do sistema. Quando um container é criado, um conjunto de namespaces também é criado automaticamente. O resultado? O container acha que está rodando sozinho no sistema. Cada container tem seu ambiente isolado e não enxerga nem interfere no host.
+
+        pid: processos do container
+
+        net: rede separada
+
+        mnt: pontos de montagem
+
+        ipc: comunicação entre processos
+
+        uts: nome do host (hostname)
+
+        user: usuários (UID/GID)
+
+        cgroup (paralelo): Limita os recursos do container (CPU, RAM etc.)
+
+    3- Aplica cgroups: Os cgroups (control groups) limitam os recursos que o container pode usar e permite que o Docker compartilhe recursos de hardware existentes no host com os containers, definindo limites e restrições. Isso garante que o container não afete o host nem outros containers.
+
+        CPU
+
+        Memória
+
+        I/O
+
+        Processos
+
+
+    4- Executa o processo definido: Depois que o ambiente isolado está preparado, o runc executa o processo definido (geralmente /bin/sh, nginx, node, etc).
+
+Esse processo se torna o processo PID 1 dentro do container.
+
+--------------------------------------------------------------------------------
+ Instalação:
+--------------------------------------------------------------------------------
 
 Instale o Docker com as informações contidas no site:
 
@@ -170,6 +223,48 @@ Comandos para gerenciar imagens:
 
     dead: Estado raro e indesejado. Indica que houve uma falha grave e o Docker não conseguiu limpar adequadamente os recursos do container. Pode ser necessário reiniciar o serviço Docker para resolver.
 
+ As alterações feitas dentro de um container em execução (como instalar pacotes, criar arquivos, mudar configurações) só existem enquanto o container está ativo.
+
+ Se você parar e deletar o container, essas mudanças se perdem. Para torná-las permanentes, você tem 3 opções principais:
+
+    1- Criar uma nova imagem com docker commit: Se você personalizou um container e quer “salvar” ele como está. Sempre que um commit for feito, estaremos salvando o estado atual do container na imagem utilizada.
+
+        docker commit <nome_ou_id_do_container> meu-container-customizado
+
+        docker commit ubuntu-container ubuntu-custom:v1
+
+        Depois, você pode rodar novos containers a partir dessa nova imagem:
+
+        docker run -it ubuntu-custom:v1
+
+        Verifique com o comando docker images que agora, você possui uma nova imagem.
+
+    2- Usar um Dockerfile e criar uma imagem com docker build: Essa é a forma mais profissional e reprodutível de manter alterações. Você cria um Dockerfile com todos os comandos que fariam as alterações:
+
+        FROM ubuntu
+
+        RUN apt update && apt install -y curl vim
+
+        COPY meu_script.sh /usr/local/bin/
+
+        CMD ["/bin/bash"]
+
+        E então cria a imagem com:
+
+        docker build -t minha-imagem-personalizada .
+
+        Agora você tem uma imagem que sempre será construída igual.
+
+    3- Usar volumes para persistir dados (quando se trata de arquivos): Se o que você precisa é salvar arquivos, logs, bancos de dados, etc., o ideal é montar volumes:
+
+        docker run -it -v /caminho/host:/caminho/container ubuntu
+
+        Assim, os dados salvos no container não se perdem mesmo que ele seja destruído.
+
+ Dica: Verifique suas mudanças com docker diff, se quiser saber o que mudou em um container em execução antes de salvar:
+
+    docker diff <nome ou ID>
+
  Comandos para gerenciar containers:
 
     docker run: Cria e inicia um container a partir de uma imagem.
@@ -244,13 +339,16 @@ Comandos para gerenciar imagens:
 
         docker logs meu_container
 
-    docker inspect: Mostra detalhes técnicos (JSON) de um container ou imagem.
+    docker inspect: Mostra detalhes técnicos (JSON) de um container ou imagem. Mostra exatamente como o Docker está estruturando o ambiente que será entregue ao runc.
 
     docker top: Mostra os processos rodando dentro de um container.
 
         docker top [nome ou ID do container]
 
     docker stats: Mostra uso de recursos (CPU, memória, rede) em tempo real dos containers.
+
+        docker stats
+        docker stats [nome ou ID do container]
 
     docker rm: Remove um container.
 
@@ -402,6 +500,10 @@ Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você
 
     sudo docker run -itv "/home/pitter/Documentos/teste-dockerrr:/var/www" --name Ubuntu ubuntu: Cria um volume de conteúdo para o container. Quando se escrever no diretório /var/www do container, o documento será salvo em /home/pitter/Documentos/teste-dockerrr.
 
+    sudo docker run ubuntu /bin/echo "Hello, Docker!": Esse comando executa um container só para rodar um comando simples e depois termina.
+
+        /bin/echo "Hello, Docker!": É o comando que será executado dentro do container. O container vai rodar o programa echo para exibir a mensagem "Hello, Docker!".
+
  docker start:
 
     docker start -ai [nome ou ID do container]: Iniciar o container e utilizar o terminal.
@@ -418,7 +520,7 @@ Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você
 
     docker ps -a --format "table {{.Names}}\t{{.Status}}": Visualizar os containers com nomes e status legíveis.
 
-
+Como tornar o c
 
 
 
