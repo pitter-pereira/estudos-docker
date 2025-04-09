@@ -1,0 +1,273 @@
+--------------------------------------------------------------------------------
+ Docker:
+--------------------------------------------------------------------------------
+
+O Docker é uma plataforma que permite criar, empacotar e executar aplicações em contêineres.
+
+Um contêiner é como uma caixinha leve e isolada que carrega tudo que uma aplicação precisa para rodar (código, bibliotecas, dependências, etc.).
+
+Ele garante que a aplicação funcione da mesma forma em qualquer lugar: no seu computador, no servidor da empresa ou na nuvem.
+
+Vantagens principais:
+
+    Portabilidade: roda em qualquer sistema que tenha Docker.
+    Leveza: contêineres são mais rápidos e consomem menos recursos que máquinas virtuais.
+    Isolamento: cada contêiner funciona de forma independente.
+
+Instale o Docker com as informações contidas no site:
+
+    https://www.docker.com/get-started/
+    https://docs.docker.com/desktop/
+
+Para testar se o Docker está funcionando, execute os comandos:
+
+    sudo docker version
+
+        Client: Docker Engine - Community
+        Version:           28.0.4
+        API version:       1.48
+        Go version:        go1.23.7
+        Git commit:        b8034c0
+        Built:             Tue Mar 25 15:07:22 2025
+        OS/Arch:           linux/amd64
+        Context:           default
+
+        Server: Docker Engine - Community
+        Engine:
+        Version:          28.0.4
+        API version:      1.48 (minimum version 1.24)
+        Go version:       go1.23.7
+        Git commit:       6430e49
+        Built:            Tue Mar 25 15:07:22 2025
+        OS/Arch:          linux/amd64
+        Experimental:     false
+        containerd:
+        Version:          1.7.27
+        GitCommit:        05044ec0a9a75232cad458027ca83437aae3f4da
+        runc:
+        Version:          1.2.5
+        GitCommit:        v1.2.5-0-g59923ef
+        docker-init:
+        Version:          0.19.0
+        GitCommit:        de40ad0
+
+    sudo docker run hello-world
+
+        Hello from Docker!
+        This message shows that your installation appears to be working correctly.
+
+        To generate this message, Docker took the following steps:
+        1. The Docker client contacted the Docker daemon.
+        2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+            (amd64)
+        3. The Docker daemon created a new container from that image which runs the
+            executable that produces the output you are currently reading.
+        4. The Docker daemon streamed that output to the Docker client, which sent it
+            to your terminal.
+
+        To try something more ambitious, you can run an Ubuntu container with:
+        $ docker run -it ubuntu bash
+
+        Share images, automate workflows, and more with a free Docker ID:
+        https://hub.docker.com/
+
+        For more examples and ideas, visit:
+        https://docs.docker.com/get-started/
+
+--------------------------------------------------------------------------------
+ Imagem e container:
+--------------------------------------------------------------------------------
+
+ Uma imagem Docker é como um molde ou modelo pronto que contém tudo o que você precisa para executar uma aplicação:
+
+    O código da aplicação;
+    Bibliotecas necessárias;
+    Dependências do sistema;
+    Variáveis de ambiente; e
+    Comandos de inicialização.
+
+ Ela é imutável — uma vez criada, não muda. Você pode pensar nela como o “ISO” de um sistema, só que mais leve e feito para rodar rapidamente em containers.
+
+ Exemplo:
+
+    Uma imagem do nginx já vem com o servidor web instalado e configurado para começar a rodar logo que o container for iniciado.
+
+ Um container Docker é uma instância viva e em execução de uma imagem. É como se você pegasse a imagem (molde) e executasse uma cópia funcional dela.
+
+O container:
+
+    Roda isolado do host (mas pode se comunicar com ele);
+    É leve e inicia rápido;
+    Pode ser parado, reiniciado, ou descartado facilmente; e
+    Pode ter dados persistentes, se configurado com volumes.
+
+ Se a imagem é a receita do bolo, o container é o bolo assando no forno.
+
+ Você pode ter vários containers rodando a partir da mesma imagem.
+
+ Exemplo:
+
+    docker run -d nginx
+    docker run -d nginx
+
+ Duas instâncias do servidor nginx rodando, ambas baseadas na mesma imagem nginx.
+
+--------------------------------------------------------------------------------
+ Comandos:
+--------------------------------------------------------------------------------
+
+ Comandos para rodar e criar containers:
+
+    docker run:  Cria e inicia um container a partir de uma imagem.
+
+            docker run -d nginx
+
+        Quando você roda docker run, o Docker:
+
+            Verifica/puxa a imagem;
+            Cria um container (estrutura + filesystem);
+            Configura o ambiente (FS, rede, variáveis, etc.);
+            Executa o processo principal; e
+            Monitora o container enquanto ele estiver vivo.
+
+
+
+
+
+
+
+docker start	Inicia um container parado. Ex: docker start meu_container
+docker stop	Para um container em execução. Ex: docker stop meu_container
+docker restart	Reinicia um container.
+docker exec	Executa um comando dentro de um container em execução. Ex: docker exec -it meu_container bash
+docker attach	Conecta seu terminal à saída de um container em execução.
+📦 Comandos para gerenciar imagens
+Comando	Descrição
+docker pull	Baixa uma imagem do Docker Hub (ou outro registry). Ex: docker pull ubuntu
+docker build	Cria uma imagem a partir de um Dockerfile. Ex: docker build -t minha_imagem .
+docker images	Lista todas as imagens disponíveis localmente.
+docker rmi	Remove uma imagem. Ex: docker rmi nginx
+📋 Comandos para monitoramento e inspeção
+Comando	Descrição
+docker ps	Lista containers em execução. Use -a para ver todos (inclusive os parados).
+docker logs	Mostra os logs de um container. Ex: docker logs meu_container
+docker inspect	Mostra detalhes técnicos (JSON) de um container ou imagem.
+docker top	Mostra os processos rodando dentro de um container.
+docker stats	Mostra uso de recursos (CPU, memória, rede) em tempo real dos containers.
+🧹 Comandos para limpeza e manutenção
+Comando	Descrição
+docker rm	Remove containers. Ex: docker rm meu_container
+docker system prune	Limpa containers parados, redes não usadas, imagens órfãs. ⚠️ Cuidado!
+docker volume prune	Remove volumes não utilizados.
+docker image prune	Remove imagens que não estão sendo usadas por nenhum container.
+🌐 Redes e Volumes
+Comando	Descrição
+docker network ls	Lista redes Docker disponíveis.
+docker network create	Cria uma rede customizada.
+docker volume ls	Lista volumes Docker.
+docker volume create	Cria um volume. Ex: docker volume create dados
+🛠️ Outros úteis
+Comando	Descrição
+docker cp	Copia arquivos entre o host e um container. Ex: docker cp meu_container:/arquivo.txt ./
+docker login	Autentica em um registry (ex: Docker Hub).
+docker tag	Marca (renomeia) uma imagem. Útil para publicar.
+docker push	Envia uma imagem para um registry remoto.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
