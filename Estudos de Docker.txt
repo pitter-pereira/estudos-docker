@@ -75,7 +75,7 @@ Para testar se o Docker está funcionando, execute os comandos:
         https://docs.docker.com/get-started/
 
 --------------------------------------------------------------------------------
- Imagem e container:
+ Imagem:
 --------------------------------------------------------------------------------
 
  Uma imagem Docker é como um molde ou modelo pronto que contém tudo o que você precisa para executar uma aplicação:
@@ -92,9 +92,51 @@ Para testar se o Docker está funcionando, execute os comandos:
 
     Uma imagem do nginx já vem com o servidor web instalado e configurado para começar a rodar logo que o container for iniciado.
 
- Um container Docker é uma instância viva e em execução de uma imagem. É como se você pegasse a imagem (molde) e executasse uma cópia funcional dela.
+Comandos para gerenciar imagens:
 
-O container:
+    docker pull: Baixa uma imagem do Docker Hub (ou outro registry).
+
+        docker pull ubuntu
+
+    docker push: Envia imagem para um repositório remoto.
+
+        docker push meu-registro/nginx:prod
+
+    docker build: Cria uma imagem a partir de um Dockerfile.
+
+        docker build -t minha_imagem .
+
+    docker images: Lista todas as imagens disponíveis localmente.
+
+        docker images
+
+    docker rmi: Remove uma imagem.
+
+        docker rmi [nome ou ID da imagem]
+
+    docker history: Mostra as camadas de uma imagem.
+
+        docker history ubuntu
+
+    docker tag: Cria uma tag (apelido) para uma imagem.
+
+        docker tag nginx meu-registro/nginx:prod
+
+    docker login: Autentica em um registry (ex: Docker Hub).
+
+    docker push: Envia uma imagem para um registry remoto.
+
+    docker image prune: Remove todas as imagens que não estão sendo usadas por nenhum container, de uma vez só.
+
+        docker image prune
+
+--------------------------------------------------------------------------------
+ Container:
+--------------------------------------------------------------------------------
+
+ Um container Docker é uma instância viva e em execução de uma imagem. É uma camada fina de read/write em cima das imagens. É como se você pegasse a imagem (molde) e executasse uma cópia funcional dela.
+
+ O container:
 
     Roda isolado do host (mas pode se comunicar com ele);
     É leve e inicia rápido;
@@ -112,10 +154,6 @@ O container:
 
  Duas instâncias do servidor nginx rodando, ambas baseadas na mesma imagem nginx.
 
---------------------------------------------------------------------------------
- Estados de um container:
---------------------------------------------------------------------------------
-
  Os containers Docker podem assumir diferentes estados ao longo de seu ciclo de vida. Conhecer esses estados ajuda bastante no monitoramento e na automação. Aqui estão os principais:
 
     running: O container está em execução. Seu processo principal (PID 1) está ativo. Aparece com status “Up” no docker ps.
@@ -132,27 +170,7 @@ O container:
 
     dead: Estado raro e indesejado. Indica que houve uma falha grave e o Docker não conseguiu limpar adequadamente os recursos do container. Pode ser necessário reiniciar o serviço Docker para resolver.
 
---------------------------------------------------------------------------------
- Comandos:
---------------------------------------------------------------------------------
-
- Todos os comandos docker possuem algumas opções úteis. Para coletar informações sobre as opções dos comandos, você pode utilizar --help:
-
-    docker run --help
-
-        Usage:  docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
-
-        Create and run a new container from an image
-
-        Aliases:
-        docker container run, docker run
-
-        Options:
-        --add-host list                     Add a custom host-to-IP mapping (host:ip)
-
-        ...
-
- Comandos para rodar e criar containers:
+ Comandos para gerenciar containers:
 
     docker run: Cria e inicia um container a partir de uma imagem.
 
@@ -200,31 +218,13 @@ O container:
                 Se esse processo morrer, o container termina
                 Você pode ver logs, status, etc.
 
-        Utilize as opções -it para que você "entre" no container e interaja com ele como se fosse uma máquina Linux normal.
-
-            docker run -it [imagem]
-
-                -i → Interativo: Mantém o STDIN (entrada padrão) aberto, mesmo que você não esteja interagindo com ele no momento. Ou seja, permite que você digite comandos dentro do container.
-
-                -t → Terminal (pseudo-TTY): Aloca um terminal virtual para o container. Isso simula um terminal real, com formatação e controle de cursor — necessário para ferramentas como bash, sh, top, etc.
-
-        Utilize as opções -dP para criar um 
-
     docker start: Inicia um container parado.
 
         docker start [nome ou nome ou ID do container - visualizado com ps -a]
 
-        Utilize as opções -ai para voltar a utilizar o terminal do container.
-
-            docker start -ai [nome ou ID do container]
-
     docker stop: Para um container em execução. Por padrão, demora alguns segundos para desligar.
 
         docker stop [nome ou ID do container]
-
-        Para acelerar o processo de parada, utilize a opção -t:
-
-            docker stop -t 0 [nome ou ID do container]
 
     docker restart:	Reinicia um container.
 
@@ -236,45 +236,9 @@ O container:
 
     docker attach: Conecta seu terminal à saída de um container em execução.
 
- Comandos para gerenciar imagens
-
-    docker pull: Baixa uma imagem do Docker Hub (ou outro registry).
-
-        docker pull ubuntu
-
-    docker push: Envia imagem para um repositório remoto.
-
-        docker push meu-registro/nginx:prod
-
-    docker build: Cria uma imagem a partir de um Dockerfile.
-
-        docker build -t minha_imagem .
-
-    docker images: Lista todas as imagens disponíveis localmente.
-
-        docker images
-
-    docker rmi: Remove uma imagem.
-
-        docker rmi [nome ou ID da imagem]
-
-    docker history: Mostra as camadas de uma imagem.
-
-        docker history ubuntu
-
-    docker tag: Cria uma tag (apelido) para uma imagem.
-
-        docker tag nginx meu-registro/nginx:prod
-
- Comandos para monitoramento e inspeção
-
     docker ps: Lista containers em execução.
 
         Use a opção -a para ver todos, inclusive os parados.
-
-        Para visualizar os containers com nomes e status legíveis, faça o comando:
-
-            docker ps -a --format "table {{.Names}}\t{{.Status}}"
 
     docker logs: Mostra os logs de um container.
 
@@ -288,8 +252,6 @@ O container:
 
     docker stats: Mostra uso de recursos (CPU, memória, rede) em tempo real dos containers.
 
- Comandos para limpeza e manutenção
-
     docker rm: Remove um container.
 
         docker rm [ID ou nome do container]
@@ -302,25 +264,51 @@ O container:
 
         docker system prune
 
-    docker volume prune: Remove todos os volumes não utilizados, de uma vez só.
+    Atalhos para sair do container:
 
-        docker volume prune
+        Encerrar o shell (e o container): exit
+        Sair sem encerrar (background): Ctrl + P seguido de Ctrl + Q
 
-    docker image prune: Remove todas as imagens que não estão sendo usadas por nenhum container, de uma vez só.
+--------------------------------------------------------------------------------
+ Volumes:
+--------------------------------------------------------------------------------
 
-        docker image prune
+ Containers são efêmeros, voláteis. Se você rodar docker rm, o container e tudo dentro dele somem. Mas às vezes você precisa que dados persistam — por exemplo:
 
- Redes e Volumes
+    Arquivos de configuração
 
-    docker network ls: Lista redes Docker disponíveis.
+    Bancos de dados (como o PostgreSQL ou MySQL)
 
-    docker network create: Cria uma rede customizada.
+    Logs de aplicação
 
-        docker network create minha-rede
+ É aí que os volumes entram!
 
-    docker network inspect: Mostra detalhes de uma rede.
+ Volumes são uma forma de armazenar dados persistentes fora do sistema de arquivos interno de um container. Eles são criados e gerenciados pelo Docker, e servem para:
 
-        docker network inspect bridge
+    Manter dados entre reinicializações ou recriações de containers
+
+    Compartilhar arquivos entre vários containers
+
+    Evitar que dados importantes sejam apagados ao remover o container
+
+ Tipos de volumes:
+
+    Volumes gerenciados pelo Docker (recomendado):
+
+        docker volume create meu_volume
+        docker run -v meu_volume:/app/dados minha_imagem
+
+    Bind mounts (liga uma pasta do host no container):
+
+        docker run -v /caminho/no/host:/app/dados minha_imagem
+
+    Volumes anônimos (usados quando você só faz -v /app/dados):
+
+        docker run -v /app/dados minha_imagem
+
+Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você não precisa gerenciar isso manualmente. O Docker cuida de tudo!
+
+ Comandos para gerenciar volumes:
 
     docker volume ls: Lista volumes Docker.
 
@@ -332,28 +320,103 @@ O container:
 
         docker volume inspect dados
 
- Outros úteis
+    docker volume rm: Remove um volume
+
+        docker volume rm [nome do volume]
+
+    docker volume prune: Remove todos os volumes não utilizados, de uma vez só.
+
+        docker volume prune
 
     docker cp: Copia arquivos entre o host e um container.
 
         docker cp meu_container:/arquivo.txt ./
 
-    docker login: Autentica em um registry (ex: Docker Hub).
+--------------------------------------------------------------------------------
+ Rede:
+--------------------------------------------------------------------------------
 
-    docker push: Envia uma imagem para um registry remoto.
+ Comandos para gerenciar as redes:
 
-    docker system df: Mostra uso de espaço em disco
+    docker network ls: Lista redes Docker disponíveis.
+
+    docker network create: Cria uma rede customizada.
+
+        docker network create minha-rede
+
+    docker network inspect: Mostra detalhes de uma rede.
+
+        docker network inspect bridge
+
+    docker port: Mostra quais portas do container estão ligadas a quais portas do host.
+
+        docker port [nome ou ID do container]
+
+--------------------------------------------------------------------------------
+ Outros comandos e opções úteis
+--------------------------------------------------------------------------------
+
+ Todos os comandos docker possuem algumas opções úteis. Para coletar informações sobre as opções dos comandos, você pode utilizar --help:
+
+    docker run --help
+
+        Usage:  docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+        Create and run a new container from an image
+
+        Aliases:
+        docker container run, docker run
+
+        Options:
+        --add-host list                     Add a custom host-to-IP mapping (host:ip)
+
+        ...
+
+ docker system df: Mostra uso de espaço em disco
 
         docker system df
 
+ docker run:
 
+    docker run -it [imagem]: Crie e inicie um container interativo com terminal. "Entre" no container e interaja com ele como se fosse uma máquina Linux normal.
 
+        -i → Interativo: Mantém o STDIN (entrada padrão) aberto, mesmo que você não esteja interagindo com ele no momento. Ou seja, permite que você digite comandos dentro do container.
 
+        -t → Terminal (pseudo-TTY): Aloca um terminal virtual para o container. Isso simula um terminal real, com formatação e controle de cursor — necessário para ferramentas como bash, sh, top, etc.
 
+    docker run -dP [container]: Execute um container em segundo plano (modo daemon) e publique suas portas automaticamente.
 
+        -d (detached): executa o container em segundo plano, sem prender o terminal.
 
+        -P (publish all exposed ports): mapeia automaticamente todas as portas expostas pela imagem para portas aleatórias do host.
 
+    docker run -dp [porta host]:[porta container] [container]: Execute um container em segundo plano (modo daemon) e publique as portas que foram definidas.
 
+        docker run -dp 8080:80 nginx   # Mapeia a porta 80 do container (onde o Nginx escuta) para a porta 8080 do host. Agora você pode acessar o Nginx via http://localhost:8080
+
+        -d (detached): executa o container em segundo plano, sem prender o terminal.
+
+        -p (publish): mapeia uma porta do container para uma porta específica do host.
+
+    docker run -dP --name meu-container [container]: Nomeia o container para não depender de IDs ou de nomes aleatórios.
+
+    sudo docker run -itv "/home/pitter/Documentos/teste-dockerrr:/var/www" --name Ubuntu ubuntu: Cria um volume de conteúdo para o container. Quando se escrever no diretório /var/www do container, o documento será salvo em /home/pitter/Documentos/teste-dockerrr.
+
+ docker start:
+
+    docker start -ai [nome ou ID do container]: Iniciar o container e utilizar o terminal.
+
+        -i → Interativo: Mantém o STDIN (entrada padrão) aberto, mesmo que você não esteja interagindo com ele no momento. Ou seja, permite que você digite comandos dentro do container.
+
+ docker stop:
+
+    docker stop -t 0 [nome ou ID do container]: Acelera o processo de parada
+
+    docker stop -t 0 $(docker ps -q): Para todos os IDs de container que o comando docker ps -q (a opção -q faz só retornar os IDs dos containers) retornar.
+
+ docker ps:
+
+    docker ps -a --format "table {{.Names}}\t{{.Status}}": Visualizar os containers com nomes e status legíveis.
 
 
 
