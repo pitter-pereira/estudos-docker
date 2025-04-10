@@ -1,26 +1,25 @@
 --------------------------------------------------------------------------------
- Docker:
---------------------------------------------------------------------------------
+Docker:
 
-O Docker é uma plataforma que permite criar, empacotar e executar aplicações em contêineres.
+ O Docker é uma plataforma que permite criar, empacotar e executar aplicações em contêineres.
 
-Ele é responsável por armazenar vários serviços de forma isolada do SO host, como: web server, banco de dados, aplicação, memcached etc.
+ Ele é responsável por armazenar vários serviços de forma isolada do SO host, como: web server, banco de dados, aplicação, memcached etc.
 
-Um contêiner é como uma caixinha leve e isolada que carrega tudo que uma aplicação precisa para rodar (código, bibliotecas, dependências, etc.).
+ Um contêiner é como uma caixinha leve e isolada que carrega tudo que uma aplicação precisa para rodar (código, bibliotecas, dependências, etc.).
 
-Ele garante que a aplicação funcione da mesma forma em qualquer lugar: no seu computador, no servidor da empresa ou na nuvem.
+ Ele garante que a aplicação funcione da mesma forma em qualquer lugar: no seu computador, no servidor da empresa ou na nuvem.
 
-Vantagens principais:
+ Vantagens principais:
 
     Portabilidade: roda em qualquer sistema que tenha Docker.
     Leveza: contêineres são mais rápidos e consomem menos recursos que máquinas virtuais.
     Isolamento: cada contêiner funciona de forma independente.
 
-O Docker desenvolveu seu próprio motor de execução, chamado libcontainer (hoje conhecido como runc).
+ O Docker desenvolveu seu próprio motor de execução, chamado libcontainer (hoje conhecido como runc).
 
-O runc é o runtime de containers padrão usado pelo Docker (e outras ferramentas compatíveis com o padrão OCI — Open Container Initiative).
+ O runc é o runtime de containers padrão usado pelo Docker (e outras ferramentas compatíveis com o padrão OCI — Open Container Initiative).
 
-Ele é responsável por criar e executar containers no nível do sistema operacional, diretamente usando os recursos do kernel Linux (namespaces, cgroups, etc).
+ Ele é responsável por criar e executar containers no nível do sistema operacional, diretamente usando os recursos do kernel Linux (namespaces, cgroups, etc).
 
  Como o runc funciona (passo a passo):
 
@@ -64,15 +63,14 @@ Ele é responsável por criar e executar containers no nível do sistema operaci
 Esse processo se torna o processo PID 1 dentro do container.
 
 --------------------------------------------------------------------------------
- Instalação:
---------------------------------------------------------------------------------
+Instalação:
 
-Instale o Docker com as informações contidas no site:
+ Instale o Docker com as informações contidas no site:
 
     https://www.docker.com/get-started/
     https://docs.docker.com/desktop/
 
-Para testar se o Docker está funcionando, execute os comandos:
+ Para testar se o Docker está funcionando, execute os comandos:
 
     sudo docker version
 
@@ -128,8 +126,7 @@ Para testar se o Docker está funcionando, execute os comandos:
         https://docs.docker.com/get-started/
 
 --------------------------------------------------------------------------------
- Imagem:
---------------------------------------------------------------------------------
+Imagem:
 
  Uma imagem Docker é como um molde ou modelo pronto que contém tudo o que você precisa para executar uma aplicação:
 
@@ -141,11 +138,79 @@ Para testar se o Docker está funcionando, execute os comandos:
 
  Ela é imutável — uma vez criada, não muda. Você pode pensar nela como o “ISO” de um sistema, só que mais leve e feito para rodar rapidamente em containers.
 
- Exemplo:
+ Exemplo: Uma imagem do nginx já vem com o servidor web instalado e configurado para começar a rodar logo que o container for iniciado.
 
-    Uma imagem do nginx já vem com o servidor web instalado e configurado para começar a rodar logo que o container for iniciado.
+ Dockerfile:
 
-Comandos para gerenciar imagens:
+    Um Dockerfile é um arquivo de texto simples usado para criar imagens Docker personalizadas de forma automatizada e reprodutível.
+
+    Ele contém uma sequência de instruções (comandos) que dizem ao Docker como construir a imagem, passo a passo.
+
+    Exemplo 1:
+
+        # Usa a imagem base do Ubuntu
+        FROM ubuntu:22.04
+
+        # Instala o curl
+        RUN apt update && apt install -y curl
+
+        # Copia um arquivo local para dentro da imagem
+        COPY meu_script.sh /usr/local/bin/
+
+        # Comando que será executado quando o container for iniciado
+        CMD ["/bin/bash"]
+
+    Exemplo 2:
+
+        FROM node:latest
+
+        LABEL author=Pitter
+
+        ENV NODE_ENV=production
+
+        ENV PORT=3000
+
+        COPY . /var/www
+
+        WORKDIR /var/www
+
+        RUN npm install
+
+        ENTRYPOINT ["npm", "start"]
+
+        EXPOSE $PORT
+
+    Principais instruções que aparecem em um Dockerfile:
+
+        FROM	    Define a imagem base
+        RUN	        Executa comandos durante a construção da imagem
+        COPY	    Copia arquivos do host para dentro da imagem
+        CMD	        Define o comando padrão quando o container rodar
+        EXPOSE	    Documenta a porta que o container usará
+        WORKDIR	    Define o diretório de trabalho
+        ENV	        Define variáveis de ambiente
+
+    Como usar um Dockerfile:
+
+        Crie o arquivo chamado Dockerfile
+
+        No mesmo diretório, rode:
+
+        docker build -f nome-dockerfile -t nome-da-imagem .   
+        
+        # O . no final ainda indica o contexto de build, ou seja, a pasta que será usada como base para copiar arquivos com COPY, ADD, etc.
+
+        Depois, você pode rodar containers com:
+
+        docker run -it nome-da-imagem
+
+ Enviar imagens para o Docker Hub:
+
+    Com sua conta criada, logue com o comando docker login;
+
+    Depois disso, o comando para realizar o push é: docker push [nome da imagem]
+
+ Comandos para gerenciar imagens:
 
     docker pull: Baixa uma imagem do Docker Hub (ou outro registry).
 
@@ -157,7 +222,9 @@ Comandos para gerenciar imagens:
 
     docker build: Cria uma imagem a partir de um Dockerfile.
 
-        docker build -t minha_imagem .
+        docker build -t minha_imagem .   
+        
+        # O . no final ainda indica o contexto de build, ou seja, a pasta que será usada como base para copiar arquivos com COPY, ADD, etc.
 
     docker images: Lista todas as imagens disponíveis localmente.
 
@@ -177,15 +244,14 @@ Comandos para gerenciar imagens:
 
     docker login: Autentica em um registry (ex: Docker Hub).
 
-    docker push: Envia uma imagem para um registry remoto.
+    docker push [usuário/nome da imagem]: Envia uma imagem para um registry remoto.
 
     docker image prune: Remove todas as imagens que não estão sendo usadas por nenhum container, de uma vez só.
 
         docker image prune
 
 --------------------------------------------------------------------------------
- Container:
---------------------------------------------------------------------------------
+Container:
 
  Um container Docker é uma instância viva e em execução de uma imagem. É uma camada fina de read/write em cima das imagens. É como se você pegasse a imagem (molde) e executasse uma cópia funcional dela.
 
@@ -368,8 +434,7 @@ Comandos para gerenciar imagens:
         Sair sem encerrar (background): Ctrl + P seguido de Ctrl + Q
 
 --------------------------------------------------------------------------------
- Volumes:
---------------------------------------------------------------------------------
+Volumes:
 
  Containers são efêmeros, voláteis. Se você rodar docker rm, o container e tudo dentro dele somem. Mas às vezes você precisa que dados persistam — por exemplo:
 
@@ -404,7 +469,7 @@ Comandos para gerenciar imagens:
 
         docker run -v /app/dados minha_imagem
 
-Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você não precisa gerenciar isso manualmente. O Docker cuida de tudo!
+ Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você não precisa gerenciar isso manualmente. O Docker cuida de tudo!
 
  Comandos para gerenciar volumes:
 
@@ -431,8 +496,7 @@ Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você
         docker cp meu_container:/arquivo.txt ./
 
 --------------------------------------------------------------------------------
- Rede:
---------------------------------------------------------------------------------
+Rede:
 
  Comandos para gerenciar as redes:
 
@@ -451,8 +515,7 @@ Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você
         docker port [nome ou ID do container]
 
 --------------------------------------------------------------------------------
- Outros comandos e opções úteis
---------------------------------------------------------------------------------
+Outros comandos e opções úteis
 
  Todos os comandos docker possuem algumas opções úteis. Para coletar informações sobre as opções dos comandos, você pode utilizar --help:
 
@@ -520,7 +583,8 @@ Internamente, volumes vivem numa pasta como: /var/lib/docker/volumes/, mas você
 
     docker ps -a --format "table {{.Names}}\t{{.Status}}": Visualizar os containers com nomes e status legíveis.
 
-Como tornar o c
+ docker run -v "/home/pitter/Documentos:/var/www" -w "/var/www" node npm start 
+
 
 
 
