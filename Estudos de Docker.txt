@@ -84,23 +84,7 @@ Instalação:
         Context:           default
 
         Server: Docker Engine - Community
-        Engine:
-        Version:          28.0.4
-        API version:      1.48 (minimum version 1.24)
-        Go version:       go1.23.7
-        Git commit:       6430e49
-        Built:            Tue Mar 25 15:07:22 2025
-        OS/Arch:          linux/amd64
-        Experimental:     false
-        containerd:
-        Version:          1.7.27
-        GitCommit:        05044ec0a9a75232cad458027ca83437aae3f4da
-        runc:
-        Version:          1.2.5
-        GitCommit:        v1.2.5-0-g59923ef
-        docker-init:
-        Version:          0.19.0
-        GitCommit:        de40ad0
+        ...
 
     sudo docker run hello-world
 
@@ -116,27 +100,20 @@ Instalação:
         4. The Docker daemon streamed that output to the Docker client, which sent it
             to your terminal.
 
-        To try something more ambitious, you can run an Ubuntu container with:
-        $ docker run -it ubuntu bash
-
-        Share images, automate workflows, and more with a free Docker ID:
-        https://hub.docker.com/
-
-        For more examples and ideas, visit:
-        https://docs.docker.com/get-started/
+        To try ...
 
 --------------------------------------------------------------------------------
 Imagem:
 
  Uma imagem Docker é como um molde ou modelo pronto que contém tudo o que você precisa para executar uma aplicação:
 
-    O código da aplicação;
+    Código da aplicação;
     Bibliotecas necessárias;
     Dependências do sistema;
     Variáveis de ambiente; e
     Comandos de inicialização.
 
- Ela é imutável — uma vez criada, não muda. Você pode pensar nela como o “ISO” de um sistema, só que mais leve e feito para rodar rapidamente em containers.
+ Ela é imutável. Você pode pensar nela como o “ISO” de um sistema, só que mais leve e feito para rodar rapidamente em containers.
 
  Exemplo: Uma imagem do nginx já vem com o servidor web instalado e configurado para começar a rodar logo que o container for iniciado.
 
@@ -146,21 +123,7 @@ Imagem:
 
     Ele contém uma sequência de instruções (comandos) que dizem ao Docker como construir a imagem, passo a passo.
 
-    Exemplo 1:
-
-        # Usa a imagem base do Ubuntu
-        FROM ubuntu:22.04
-
-        # Instala o curl
-        RUN apt update && apt install -y curl
-
-        # Copia um arquivo local para dentro da imagem
-        COPY meu_script.sh /usr/local/bin/
-
-        # Comando que será executado quando o container for iniciado
-        CMD ["/bin/bash"]
-
-    Exemplo 2:
+    Exemplo:
 
         FROM node:latest
 
@@ -190,65 +153,75 @@ Imagem:
         WORKDIR	    Define o diretório de trabalho
         ENV	        Define variáveis de ambiente
 
-    Como usar um Dockerfile:
+    Como usar um Dockerfile criado:
 
-        Crie o arquivo chamado Dockerfile
+        Crie o arquivo chamado Dockerfile;
 
         No mesmo diretório, rode:
 
-        docker build -f nome-dockerfile -t nome-da-imagem .   
-        
-        # O . no final ainda indica o contexto de build, ou seja, a pasta que será usada como base para copiar arquivos com COPY, ADD, etc.
+            docker build -f nome-dockerfile -t nome-da-imagem .   # O '.' no final ainda indica o contexto de build, ou seja, a pasta que será usada como base para copiar arquivos com COPY, ADD, etc.
 
         Depois, você pode rodar containers com:
 
-        docker run -it nome-da-imagem
-
- Enviar imagens para o Docker Hub:
-
-    Com sua conta criada, logue com o comando docker login;
-
-    Depois disso, o comando para realizar o push é: docker push [nome da imagem]
+            docker run -it nome-da-imagem
 
  Comandos para gerenciar imagens:
 
-    docker pull: Baixa uma imagem do Docker Hub (ou outro registry).
+    Baixar uma imagem do Docker Hub (ou outro registry): 
 
-        docker pull ubuntu
+        docker pull ubuntu                  # Imagens oficiais
 
-    docker push: Envia imagem para um repositório remoto.
+        docker pull usuario/custom-app      # Imagens comunitárias
 
-        docker push meu-registro/nginx:prod
+    Criar uma imagem a partir de um Dockerfile:
 
-    docker build: Cria uma imagem a partir de um Dockerfile.
+        docker build -t minha_imagem .   # O . no final ainda indica o contexto de build, ou seja, a pasta que será usada como base para copiar arquivos com COPY, ADD, etc.
 
-        docker build -t minha_imagem .   
-        
-        # O . no final ainda indica o contexto de build, ou seja, a pasta que será usada como base para copiar arquivos com COPY, ADD, etc.
-
-    docker images: Lista todas as imagens disponíveis localmente.
+    Listar todas as imagens disponíveis localmente:
 
         docker images
 
-    docker rmi: Remove uma imagem.
+    Remover uma imagem:
 
         docker rmi [nome ou ID da imagem]
 
-    docker history: Mostra as camadas de uma imagem.
+    Remover todas as imagens que não estão sendo usadas por nenhum container, de uma vez só.
 
-        docker history ubuntu
+        docker image prune
 
-    docker tag: Cria uma tag (apelido) para uma imagem.
+    Mostrar as camadas de uma imagem:
+
+        docker history [nome ou ID da imagem]
+
+    Criar uma tag (apelido) para uma imagem:
 
         docker tag nginx meu-registro/nginx:prod
 
-    docker login: Autentica em um registry (ex: Docker Hub).
+ Docker Hub:
 
-    docker push [usuário/nome da imagem]: Envia uma imagem para um registry remoto.
+    O Docker Hub é o repositório oficial de imagens Docker. Ele funciona como um "GitHub das imagens Docker", com imagens oficiais e comunitárias:
 
-    docker image prune: Remove todas as imagens que não estão sendo usadas por nenhum container, de uma vez só.
+        Imagens oficiais (ex: mysql, python, redis): revisadas e mantidas com padrões elevados de segurança e confiabilidade.
 
-        docker image prune
+        Imagens comunitárias (ex: usuario/custom-app): úteis, mas é bom revisar o conteúdo e a confiabilidade.
+
+    Baixar uma imagem do Docker Hub (ou outro registry): 
+
+        docker pull ubuntu                  # Imagens oficiais
+
+        docker pull usuario/custom-app      # Imagens comunitárias
+
+    Enviar uma imagem para um repositório remoto (Docker Hub ou outro):
+
+        docker push meu-registro/nginx:prod
+
+    Autenticar em um repositório remoto (Docker Hub ou outro):
+
+        docker login   # Com sua conta já criada, siga os passos apresentados no terminal
+
+    Enviar uma imagem para um repositório remoto (Docker Hub ou outro):
+
+        docker push [usuário/nome da imagem]
 
 --------------------------------------------------------------------------------
 Container:
@@ -258,8 +231,11 @@ Container:
  O container:
 
     Roda isolado do host (mas pode se comunicar com ele);
+
     É leve e inicia rápido;
+
     Pode ser parado, reiniciado, ou descartado facilmente; e
+
     Pode ter dados persistentes, se configurado com volumes.
 
  Se a imagem é a receita do bolo, o container é o bolo assando no forno.
@@ -271,9 +247,9 @@ Container:
     docker run -d nginx
     docker run -d nginx
 
- Duas instâncias do servidor nginx rodando, ambas baseadas na mesma imagem nginx.
+    Duas instâncias do servidor nginx rodando, ambas baseadas na mesma imagem nginx.
 
- Os containers Docker podem assumir diferentes estados ao longo de seu ciclo de vida. Conhecer esses estados ajuda bastante no monitoramento e na automação. Aqui estão os principais:
+ Os containers Docker podem assumir diferentes estados ao longo de seu ciclo de vida:
 
     running: O container está em execução. Seu processo principal (PID 1) está ativo. Aparece com status “Up” no docker ps.
 
@@ -293,7 +269,7 @@ Container:
 
  Se você parar e deletar o container, essas mudanças se perdem. Para torná-las permanentes, você tem 3 opções principais:
 
-    1- Criar uma nova imagem com docker commit: Se você personalizou um container e quer “salvar” ele como está. Sempre que um commit for feito, estaremos salvando o estado atual do container na imagem utilizada.
+    1 - Criar uma nova imagem com docker commit: Se você personalizou um container e quer “salvar” ele como está. Sempre que um commit for feito, estaremos salvando o estado atual do container na imagem utilizada.
 
         docker commit <nome_ou_id_do_container> meu-container-customizado
 
@@ -301,11 +277,11 @@ Container:
 
         Depois, você pode rodar novos containers a partir dessa nova imagem:
 
-        docker run -it ubuntu-custom:v1
+            docker run -it ubuntu-custom:v1
 
-        Verifique com o comando docker images que agora, você possui uma nova imagem.
+        Verifique com o comando docker images que você possui uma nova imagem.
 
-    2- Usar um Dockerfile e criar uma imagem com docker build: Essa é a forma mais profissional e reprodutível de manter alterações. Você cria um Dockerfile com todos os comandos que fariam as alterações:
+    2 - Usar um Dockerfile e criar uma imagem com docker build: Essa é a forma mais profissional e reprodutível de manter alterações. Você cria um Dockerfile com todos os comandos que fariam as alterações:
 
         FROM ubuntu
 
@@ -317,11 +293,11 @@ Container:
 
         E então cria a imagem com:
 
-        docker build -t minha-imagem-personalizada .
+            docker build -t minha-imagem-personalizada .
 
         Agora você tem uma imagem que sempre será construída igual.
 
-    3- Usar volumes para persistir dados (quando se trata de arquivos): Se o que você precisa é salvar arquivos, logs, bancos de dados, etc., o ideal é montar volumes:
+    3 - Usar volumes para persistir dados (quando se trata de arquivos): Se o que você precisa é salvar arquivos, logs, bancos de dados, etc., o ideal é montar volumes:
 
         docker run -it -v /caminho/host:/caminho/container ubuntu
 
@@ -329,14 +305,15 @@ Container:
 
  Dica: Verifique suas mudanças com docker diff, se quiser saber o que mudou em um container em execução antes de salvar:
 
-    docker diff <nome ou ID>
+    docker diff [nome ou ID do container]
 
  Comandos para gerenciar containers:
 
-    docker run: Cria e inicia um container a partir de uma imagem.
+    Criar e iniciar um container a partir de uma imagem:
 
-        docker run [nome da imagem]
-        docker run [username/nome da imagem]
+        docker run ubuntu                  # Imagens oficiais
+
+        docker run usuario/custom-app      # Imagens comunitárias
 
         Quando você roda docker run, o Docker:
 
@@ -378,53 +355,60 @@ Container:
 
                 Se esse processo morrer, o container termina
                 Você pode ver logs, status, etc.
+    
+    Listar containers em execução:
 
-    docker start: Inicia um container parado.
+        docker ps
 
-        docker start [nome ou nome ou ID do container - visualizado com ps -a]
+    Listar containers em execução e parados:
 
-    docker stop: Para um container em execução. Por padrão, demora alguns segundos para desligar.
+        docker ps -a
+
+    Parar um container em execução (demora alguns segundos para desligar, sem a opção -t):
 
         docker stop [nome ou ID do container]
 
-    docker restart:	Reinicia um container.
+    Iniciar um container parado:
+
+        docker start [nome ou nome ou ID do container - visualizado com ps -a]
+
+    Reiniciar um container:
 
         docker restart [nome ou ID do container]
 
-    docker exec: Executa um comando dentro de um container em execução.
+    Executar um comando dentro de um container em execução:
 
         docker exec -it [nome ou ID do container] bash
 
-    docker attach: Conecta seu terminal à saída de um container em execução.
+    Conecta seu terminal à saída de um container em execução:
 
-    docker ps: Lista containers em execução.
+        docker attach [nome ou ID do container]
 
-        Use a opção -a para ver todos, inclusive os parados.
+    Mostrar os logs de um container:
 
-    docker logs: Mostra os logs de um container.
+      docker logs [nome ou ID do container]
 
-        docker logs meu_container
+    Mostrar detalhes técnicos (JSON) de um container ou imagem:
 
-    docker inspect: Mostra detalhes técnicos (JSON) de um container ou imagem. Mostra exatamente como o Docker está estruturando o ambiente que será entregue ao runc.
+        docker inspect [nome ou ID do container]   # Mostra exatamente como o Docker está estruturando o ambiente que será entregue ao runc.
 
-    docker top: Mostra os processos rodando dentro de um container.
+    Mostrar os processos rodando dentro de um container:
 
         docker top [nome ou ID do container]
 
-    docker stats: Mostra uso de recursos (CPU, memória, rede) em tempo real dos containers.
+    Mostrar o uso de recursos (CPU, memória, rede) em tempo real dos containers:
 
-        docker stats
         docker stats [nome ou ID do container]
 
-    docker rm: Remove um container.
+    Remover um container:
 
         docker rm [ID ou nome do container]
 
-    docker container prune: Remove todos os containers parados do sistema, de uma vez só.
+    Remover todos os containers parados do sistema, de uma vez só:
 
         docker container prune
 
-    docker system prune: Limpa os containers parados, redes não usadas e imagens órfãs, de uma vez só.
+    Limpar os containers parados, redes não usadas e imagens órfãs, de uma vez só:
 
         docker system prune
 
@@ -436,7 +420,7 @@ Container:
 --------------------------------------------------------------------------------
 Volumes:
 
- Containers são efêmeros, voláteis. Se você rodar docker rm, o container e tudo dentro dele somem. Mas às vezes você precisa que dados persistam — por exemplo:
+ Containers são efêmeros, voláteis. Se você rodar docker rm, o container e tudo dentro dele somem. Mas às vezes você precisa que os dados persistam:
 
     Arquivos de configuração
 
@@ -473,46 +457,117 @@ Volumes:
 
  Comandos para gerenciar volumes:
 
-    docker volume ls: Lista volumes Docker.
+    Listar os volumes:
 
-    docker volume create: Cria um volume.
+        docker volume ls
+
+    Criar um volume:
 
         docker volume create dados
 
-    docker volume inspect: Detalha um volume
+    Detalhar um volume:
 
         docker volume inspect dados
 
-    docker volume rm: Remove um volume
+    Remover um volume:
 
         docker volume rm [nome do volume]
 
-    docker volume prune: Remove todos os volumes não utilizados, de uma vez só.
+    Remover todos os volumes não utilizados, de uma vez só:
 
         docker volume prune
 
-    docker cp: Copia arquivos entre o host e um container.
+    Copiar arquivos entre o host e um container:
 
         docker cp meu_container:/arquivo.txt ./
 
 --------------------------------------------------------------------------------
 Rede:
 
+ Quando você cria contêineres sem especificar uma rede, o Docker automaticamente os coloca na rede padrão chamada bridge, que é uma rede interna isolada do host.
+
+ Cada contêiner nessa rede recebe um IP interno (geralmente na faixa 172.17.0.0/16). Os contêineres podem acessar a internet, mas não são acessíveis diretamente de fora (a menos que você mapeie portas).
+ 
+ Os contêineres não se enxergam pelo nome nessa rede padrão. Só por IP.
+
+ O Docker oferece alguns drivers de rede padrão:
+
+    bridge	    Padrão para contêineres locais. Usado quando você não especifica uma rede.
+    host	    Usa a rede do host diretamente, sem isolamento.
+    none	    Sem rede. Contêiner completamente isolado.
+    overlay	    Usado com Docker Swarm para conectar contêineres em hosts diferentes.
+    macvlan	    Dá um endereço IP diretamente da rede física ao contêiner.
+
+ Conceitos Básicos:
+
+    Container isolado: Cada contêiner tem sua pilha de rede.
+
+    Comunicação entre contêineres: Normalmente, você cria uma rede bridge personalizada.
+
+    Exposição de portas: Usado para acesso externo (-p ou --publish).
+
  Comandos para gerenciar as redes:
 
-    docker network ls: Lista redes Docker disponíveis.
+    Lista as redes disponíveis.
 
-    docker network create: Cria uma rede customizada.
+        docker network ls
+
+    Criar uma rede customizada:
 
         docker network create minha-rede
 
-    docker network inspect: Mostra detalhes de uma rede.
+    Mostrar detalhes de uma rede:
 
         docker network inspect bridge
 
-    docker port: Mostra quais portas do container estão ligadas a quais portas do host.
+    Mostra quais portas do container estão ligadas a quais portas do host?
 
         docker port [nome ou ID do container]
+
+    Iniciar contêineres na mesma rede:
+
+        docker run -dit --name web --network minha-rede nginx
+        docker run -dit --name app --network minha-rede alpine
+
+        Agora o contêiner app pode acessar web usando o nome web como hostname:
+
+        docker exec -it app bash   # Executa o ping para web usando o nome, não o ip
+
+    Conectar e desconectar redes:
+
+        Conectar:
+
+            docker network connect minha-rede [nome ou ID do container]
+
+        Desconectar:
+
+            docker network disconnect minha-rede [nome ou ID do container]
+
+    Remover rede:
+
+        docker network rm minha-rede   # Obs: só pode remover redes que não estão em uso.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --------------------------------------------------------------------------------
 Outros comandos e opções úteis
@@ -585,6 +640,9 @@ Outros comandos e opções úteis
 
  docker run -v "/home/pitter/Documentos:/var/www" -w "/var/www" node npm start 
 
+ docker network create --driver bridge minha-rede: Cria uma rede com o driver bridge
+
+ sudo docker run -it --name "ubuntu-na-nova-rede" --network "minha-rede" ubuntu: Cria um ubuntu e o coloca na rede (já criada) minha-rede
 
 
 
