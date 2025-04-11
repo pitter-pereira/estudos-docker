@@ -1,0 +1,33 @@
+version: "3.8" # Versão da sintaxe do Docker Compose (use sempre uma recente, como '3.8')
+
+services: # Define os serviços (contêineres) que serão criados
+  web: # Nome do serviço (pode ser qualquer nome)
+    build: ./app # Diz para construir a imagem a partir do Dockerfile na pasta ./app
+    container_name: flask_app # Nome do contêiner (opcional, para facilitar identificação)
+    ports:
+      - "5000:5000" # Mapeia a porta 5000 do host para a porta 5000 do contêiner
+    environment: # Variáveis de ambiente disponíveis dentro do contêiner
+      - DATABASE_URL=postgres://user:password@db:5432/meubanco # URL para conectar ao PostgreSQL
+      - REDIS_URL=redis://redis:6379 # URL para conectar ao Redis
+    depends_on: # Define dependências: esses serviços serão iniciados antes
+      - db
+      - redis
+
+  db: # Serviço do banco de dados PostgreSQL
+    image: postgres:15 # Usa a imagem oficial do PostgreSQL, versão 15
+    container_name: postgres_db # Nome do contêiner
+    environment: # Variáveis de ambiente para configurar o banco
+      POSTGRES_USER: user # Usuário do banco
+      POSTGRES_PASSWORD: password # Senha do banco
+      POSTGRES_DB: meubanco # Nome do banco a ser criado
+    volumes:
+      - db_data:/var/lib/postgresql/data # Volume persistente para armazenar dados do banco
+
+  redis: # Serviço do cache Redis
+    image: redis:latest # Usa a imagem oficial mais recente do Redis
+    container_name: redis_cache # Nome do contêiner
+
+volumes: # Define volumes persistentes
+  db_data: # Nome do volume usado para armazenar dados do PostgreSQL
+
+# Esse docker-compose.yml define três serviços integrados: web, db e redis. Ele constrói o serviço web a partir de um Dockerfile e usa imagens oficiais para o PostgreSQL e Redis. O volume db_data garante que os dados do banco não sejam perdidos ao remover o contêiner.
