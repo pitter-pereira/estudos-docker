@@ -1,11 +1,13 @@
 --------------------------------------------------------------------------------
 Docker:
 
- O Docker é uma plataforma que permite criar, empacotar e executar aplicações em contêineres.
+ O Docker é uma plataforma de código aberto que permite criar, empacotar e executar aplicações em contêineres, o que facilita a criação de ambientes isolados durante o desenvolvimento de software. Isso é importante para a gestão da infraestrutura da aplicação, desde a criação até a modificação dos serviços.
 
  Ele é responsável por armazenar vários serviços de forma isolada do SO host, como: web server, banco de dados, aplicação, memcached etc.
 
  Um contêiner é como uma caixinha leve e isolada que carrega tudo que uma aplicação precisa para rodar (código, bibliotecas, dependências, etc.).
+
+ Na prática, o Docker age como uma máquina virtual que roda software dentro de outro sistema operacional.
 
  Ele garante que a aplicação funcione da mesma forma em qualquer lugar: no seu computador, no servidor da empresa ou na nuvem.
 
@@ -14,6 +16,12 @@ Docker:
     Portabilidade: roda em qualquer sistema que tenha Docker.
     Leveza: contêineres são mais rápidos e consomem menos recursos que máquinas virtuais.
     Isolamento: cada contêiner funciona de forma independente.
+
+ Docker x virtualização:
+
+    Os contêineres do Docker têm seu próprio sistema de arquivos, estrutura de dependências, processos e recursos de rede. A aplicação tem tudo o que precisa dentro do contêiner e pode ser executada em qualquer lugar. A tecnologia de contêiner do Docker usa diretamente os recursos subjacentes do kernel do sistema operacional host.
+
+    As máquinas virtuais (VMs) fornecem a virtualização de uma máquina inteira (servidor). Uma máquina virtual emula os componentes de hardware de uma máquina física, como CPU, memória, placa de interface de rede, controladores USB e placas de som. Você pode executar um sistema operacional convidado e várias aplicações no ambiente virtual.
 
  O Docker desenvolveu seu próprio motor de execução, chamado libcontainer (hoje conhecido como runc).
 
@@ -582,26 +590,6 @@ Docker Compose:
 
         docker compose logs
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 --------------------------------------------------------------------------------
 Outros comandos e opções úteis
 
@@ -676,8 +664,6 @@ Outros comandos e opções úteis
  docker network create --driver bridge minha-rede: Cria uma rede com o driver bridge
 
  sudo docker run -it --name "ubuntu-na-nova-rede" --network "minha-rede" ubuntu: Cria um ubuntu e o coloca na rede (já criada) minha-rede
-
-
 
 
 
